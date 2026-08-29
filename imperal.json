@@ -1,0 +1,591 @@
+{
+  "manifest_schema_version": 3,
+  "sdk_version": "5.13.0",
+  "app_id": "buffer-connector",
+  "version": "0.1.0",
+  "name": "Buffer",
+  "description": "Connect your own Buffer account (API key) to manage social channels, scheduled posts, and post ideas via Buffer's GraphQL API.",
+  "icon": "icon.svg",
+  "actions_explicit": true,
+  "system": false,
+  "capabilities": [
+    "buffer:read",
+    "buffer:write"
+  ],
+  "tools": [
+    {
+      "name": "connect_buffer",
+      "description": "Connect your own Buffer account by saving its API key, after checking it actually works.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:connection"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "label": {
+            "default": "",
+            "description": "A friendly name for this account, e.g. 'Marketing team'.",
+            "title": "Label",
+            "type": "string"
+          },
+          "access_token": {
+            "description": "Your Buffer API key (Buffer Settings > API).",
+            "title": "Access Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_token"
+        ],
+        "title": "ConnectBufferParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "organization_id": {
+            "default": "",
+            "title": "Organization Id",
+            "type": "string"
+          }
+        },
+        "title": "ConnectBufferResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_buffer-connector_chat"
+    },
+    {
+      "name": "disconnect_buffer",
+      "description": "Disconnect a Buffer account: deletes the saved API key. Nothing in Buffer itself is changed.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "delete:connection"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "description": "The connection id to disconnect, from list_connections.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connection_id"
+        ],
+        "title": "DisconnectBufferParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_buffer-connector_chat"
+    },
+    {
+      "name": "list_connections",
+      "description": "List the connected Buffer accounts.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {},
+        "title": "ListConnectionsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "BufferConnection": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "label": {
+                "default": "",
+                "title": "Label",
+                "type": "string"
+              },
+              "organization_id": {
+                "default": "",
+                "title": "Organization Id",
+                "type": "string"
+              }
+            },
+            "title": "BufferConnection",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "connections": {
+            "items": {
+              "$ref": "#/$defs/BufferConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          }
+        },
+        "title": "ConnectionList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_buffer-connector_chat"
+    },
+    {
+      "name": "list_channels",
+      "description": "List connected social channels (e.g. Instagram, X, LinkedIn, Facebook pages) on the connected Buffer account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Buffer account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListChannelsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Channel": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "service": {
+                "default": "",
+                "title": "Service",
+                "type": "string"
+              },
+              "avatar": {
+                "default": "",
+                "title": "Avatar",
+                "type": "string"
+              }
+            },
+            "title": "Channel",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "channels": {
+            "items": {
+              "$ref": "#/$defs/Channel"
+            },
+            "title": "Channels",
+            "type": "array"
+          }
+        },
+        "title": "ChannelList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_buffer-connector_chat"
+    },
+    {
+      "name": "list_posts",
+      "description": "List posts (updates) for one channel, optionally filtered by status ('sent' or 'due'/queued).",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Buffer account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "channel_id": {
+            "description": "The channel id to list posts for, from list_channels.",
+            "title": "Channel Id",
+            "type": "string"
+          },
+          "status": {
+            "default": "",
+            "description": "Optionally filter by status: 'sent', 'due' (queued/scheduled), or leave empty for all.",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "channel_id"
+        ],
+        "title": "ListPostsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Post": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "text": {
+                "default": "",
+                "title": "Text",
+                "type": "string"
+              },
+              "status": {
+                "default": "",
+                "title": "Status",
+                "type": "string"
+              },
+              "scheduled_at": {
+                "default": "",
+                "title": "Scheduled At",
+                "type": "string"
+              },
+              "channel_id": {
+                "default": "",
+                "title": "Channel Id",
+                "type": "string"
+              }
+            },
+            "title": "Post",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "posts": {
+            "items": {
+              "$ref": "#/$defs/Post"
+            },
+            "title": "Posts",
+            "type": "array"
+          }
+        },
+        "title": "PostList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_buffer-connector_chat"
+    },
+    {
+      "name": "create_post",
+      "description": "Create (schedule) a new post on a Buffer channel, optionally at a specific time or the next queue slot.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:post"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Buffer account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "channel_id": {
+            "description": "The channel id to post to, from list_channels.",
+            "title": "Channel Id",
+            "type": "string"
+          },
+          "text": {
+            "description": "The post text/caption.",
+            "title": "Text",
+            "type": "string"
+          },
+          "scheduled_at": {
+            "default": "",
+            "description": "ISO 8601 timestamp to schedule the post at. Omit to add it to the next available queue slot.",
+            "title": "Scheduled At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "channel_id",
+          "text"
+        ],
+        "title": "CreatePostParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "default": "",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "title": "PostCreateResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_buffer-connector_chat"
+    },
+    {
+      "name": "delete_post",
+      "description": "Permanently delete a scheduled or sent Buffer post. Cannot be undone.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "delete:post"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Buffer account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "post_id": {
+            "description": "The post id to delete, from list_posts.",
+            "title": "Post Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "post_id"
+        ],
+        "title": "DeletePostParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          },
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_buffer-connector_chat"
+    },
+    {
+      "name": "create_idea",
+      "description": "Create a new post idea (a draft thought to turn into a post later) in the connected Buffer account.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:idea"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Buffer account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "text": {
+            "description": "The idea's text content -- a draft thought to turn into a post later.",
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "CreateIdeaParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "IdeaCreateResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_buffer-connector_chat"
+    },
+    {
+      "name": "get_account_info",
+      "description": "Read the connected Buffer account's own organization profile.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Buffer account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "GetAccountInfoParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "organization_id": {
+            "default": "",
+            "title": "Organization Id",
+            "type": "string"
+          },
+          "organization_name": {
+            "default": "",
+            "title": "Organization Name",
+            "type": "string"
+          }
+        },
+        "title": "AccountInfo",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_buffer-connector_chat"
+    },
+    {
+      "name": "audit_buffer_account",
+      "description": "Build one aggregated channel overview for the connected Buffer account: total connected channels broken down by social service (Instagram, X, LinkedIn, etc.).",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which saved Buffer account to use. Omit if only one is connected.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "AuditBufferAccountParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "total_channels": {
+            "default": 0,
+            "title": "Total Channels",
+            "type": "integer"
+          },
+          "channels_by_service": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Channels By Service",
+            "type": "object"
+          }
+        },
+        "title": "BufferAccountReport",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_buffer-connector_chat"
+    }
+  ],
+  "signals": [],
+  "schedules": [],
+  "required_scopes": [],
+  "icon_size_bytes": 677,
+  "panels": [
+    {
+      "panel_id": "buffer_sidebar",
+      "slot": "left",
+      "title": "",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "buffer_settings",
+      "slot": "center",
+      "title": "",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    }
+  ]
+}

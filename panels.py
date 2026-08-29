@@ -63,7 +63,7 @@ def _connect_form() -> ui.UINode:
                 ]),
                 ui.Stack(direction="v", gap=1, children=[
                     ui.Text("API key", variant="label"),
-                    ui.Input(param_name="access_token", placeholder="Paste your Buffer API key", secret=True),
+                    ui.Input(param_name="access_token", placeholder="Paste your Buffer API key"),
                 ]),
             ]),
         ],

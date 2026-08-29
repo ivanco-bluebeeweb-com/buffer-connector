@@ -55,14 +55,13 @@ def _connect_form() -> ui.UINode:
     return ui.Form(
         submit_label="Connect Buffer",
         action=ui.Call("connect_buffer"),
-        full_width=True,
         children=[
-            ui.Stack(direction="v", gap=3, full_width=True, children=[
-                ui.Stack(direction="v", gap=1, full_width=True, children=[
+            ui.Stack(direction="v", gap=3, children=[
+                ui.Stack(direction="v", gap=1, children=[
                     ui.Text("Account label", variant="label"),
                     ui.Input(param_name="label", placeholder="e.g. Marketing team"),
                 ]),
-                ui.Stack(direction="v", gap=1, full_width=True, children=[
+                ui.Stack(direction="v", gap=1, children=[
                     ui.Text("API key", variant="label"),
                     ui.Input(param_name="access_token", placeholder="Paste your Buffer API key", secret=True),
                 ]),
@@ -89,11 +88,11 @@ def _help_modal() -> ui.UINode:
 @ext.panel("buffer_sidebar", slot="left")
 async def buffer_sidebar(ctx, **kwargs) -> object:
     connections = await h._load_connections(ctx)
-    return ui.Stack(direction="v", gap=3, full_width=True, children=[
+    return ui.Stack(direction="v", gap=3, children=[
         ui.Text("Buffer", variant="heading"),
         _connections_section(connections),
         ui.Divider(),
-        ui.Stack(direction="v", gap=2, full_width=True, children=[
+        ui.Stack(direction="v", gap=2, children=[
             _connect_form(),
             _help_modal(),
         ]),

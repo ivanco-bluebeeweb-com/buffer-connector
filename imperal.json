@@ -63,7 +63,7 @@
         "title": "ConnectBufferResult",
         "type": "object"
       },
-      "event": "",
+      "event": "buffer-connector.connect_buffer",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -108,7 +108,7 @@
         "title": "DeleteResult",
         "type": "object"
       },
-      "event": "",
+      "event": "buffer-connector.disconnect_buffer",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -376,7 +376,7 @@
         "title": "PostCreateResult",
         "type": "object"
       },
-      "event": "",
+      "event": "buffer-connector.create_post",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -427,7 +427,7 @@
         "title": "DeleteResult",
         "type": "object"
       },
-      "event": "",
+      "event": "buffer-connector.delete_post",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -473,7 +473,7 @@
         "title": "IdeaCreateResult",
         "type": "object"
       },
-      "event": "",
+      "event": "buffer-connector.create_idea",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -568,6 +568,11 @@
   "schedules": [],
   "required_scopes": [],
   "icon_size_bytes": 677,
+  "lifecycle": {
+    "health_check": {
+      "interval_sec": 60
+    }
+  },
   "panels": [
     {
       "panel_id": "buffer_sidebar",

@@ -70,9 +70,10 @@ async def resolve_or_error(ctx, connection_id: str = ""):
 @chat.function(
     "connect_buffer",
     "Connect your own Buffer account by saving its API key, after checking it actually works.",
-    action_type="write", chain_callable=True, effects=["create:connection"], data_model=ConnectBufferResult,
+    action_type="write", chain_callable=True, effects=["create:connection"], data_model=ConnectBufferResult, event="buffer-connector.connect_buffer",
 )
 async def connect_buffer(ctx, params: ConnectBufferParams) -> ActionResult:
+    """Verify the supplied API key against Buffer's v1 API, then store it."""
     fake_conn = {"access_token": params.access_token}
     try:
         data = await bf.graphql(ctx, fake_conn, _ORGS_QUERY, action="verify Buffer API key")
@@ -99,9 +100,10 @@ async def connect_buffer(ctx, params: ConnectBufferParams) -> ActionResult:
 @chat.function(
     "disconnect_buffer",
     "Disconnect a Buffer account: deletes the saved API key. Nothing in Buffer itself is changed.",
-    action_type="write", chain_callable=True, effects=["delete:connection"], data_model=DeleteResult,
+    action_type="write", chain_callable=True, effects=["delete:connection"], data_model=DeleteResult, event="buffer-connector.disconnect_buffer",
 )
 async def disconnect_buffer(ctx, params: DisconnectBufferParams) -> ActionResult:
+    """Remove one saved connection's API key; Buffer data is untouched."""
     connections = await _load_connections(ctx)
     remaining = [c for c in connections if c.get("id") != params.connection_id]
     if len(remaining) == len(connections):
@@ -116,6 +118,7 @@ async def disconnect_buffer(ctx, params: DisconnectBufferParams) -> ActionResult
     action_type="read", chain_callable=True, data_model=ConnectionList,
 )
 async def list_connections(ctx, params: ListConnectionsParams) -> ActionResult:
+    """Return safe connection metadata only -- never the stored API key."""
     connections = await _load_connections(ctx)
     return ActionResult.ok(ConnectionList(connections=[
         BufferConnection(id=c.get("id", ""), label=c.get("label", ""), organization_id=c.get("organization_id", ""))

@@ -102,6 +102,7 @@ def _post_entity(p: dict) -> Post:
     action_type="read", chain_callable=True, data_model=ChannelList,
 )
 async def list_channels(ctx, params: ListChannelsParams) -> ActionResult:
+    """Read the social channels connected to one Buffer account."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -122,6 +123,7 @@ async def list_channels(ctx, params: ListChannelsParams) -> ActionResult:
     action_type="read", chain_callable=True, data_model=PostList,
 )
 async def list_posts(ctx, params: ListPostsParams) -> ActionResult:
+    """Read posts (updates) for one channel, optionally filtered by status."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -139,9 +141,10 @@ async def list_posts(ctx, params: ListPostsParams) -> ActionResult:
 @chat.function(
     "create_post",
     "Create (schedule) a new post on a Buffer channel, optionally at a specific time or the next queue slot.",
-    action_type="write", chain_callable=True, effects=["create:post"], data_model=PostCreateResult,
+    action_type="write", chain_callable=True, effects=["create:post"], data_model=PostCreateResult, event="buffer-connector.create_post",
 )
 async def create_post(ctx, params: CreatePostParams) -> ActionResult:
+    """Schedule a new post on a Buffer channel."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -159,9 +162,10 @@ async def create_post(ctx, params: CreatePostParams) -> ActionResult:
 @chat.function(
     "delete_post",
     "Permanently delete a scheduled or sent Buffer post. Cannot be undone.",
-    action_type="write", chain_callable=True, effects=["delete:post"], data_model=DeleteResult,
+    action_type="write", chain_callable=True, effects=["delete:post"], data_model=DeleteResult, event="buffer-connector.delete_post",
 )
 async def delete_post(ctx, params: DeletePostParams) -> ActionResult:
+    """Permanently delete a scheduled or sent Buffer post."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -175,9 +179,10 @@ async def delete_post(ctx, params: DeletePostParams) -> ActionResult:
 @chat.function(
     "create_idea",
     "Create a new post idea (a draft thought to turn into a post later) in the connected Buffer account.",
-    action_type="write", chain_callable=True, effects=["create:idea"], data_model=IdeaCreateResult,
+    action_type="write", chain_callable=True, effects=["create:idea"], data_model=IdeaCreateResult, event="buffer-connector.create_idea",
 )
 async def create_idea(ctx, params: CreateIdeaParams) -> ActionResult:
+    """Create a new post idea in the connected Buffer account."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err
@@ -195,6 +200,7 @@ async def create_idea(ctx, params: CreateIdeaParams) -> ActionResult:
     action_type="read", chain_callable=True, data_model=AccountInfo,
 )
 async def get_account_info(ctx, params: GetAccountInfoParams) -> ActionResult:
+    """Read the connected Buffer account's own organization profile."""
     conn, err = await resolve_or_error(ctx, params.connection_id)
     if err:
         return err

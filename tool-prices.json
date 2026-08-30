@@ -1,0 +1,12 @@
+{
+  "connect_buffer": 0,
+  "disconnect_buffer": 0,
+  "list_connections": 0,
+  "list_channels": 8,
+  "list_posts": 8,
+  "create_post": 16,
+  "delete_post": 16,
+  "create_idea": 16,
+  "get_account_info": 8,
+  "audit_buffer_account": 40
+}

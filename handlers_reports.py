@@ -38,7 +38,7 @@ async def audit_buffer_account(ctx, params: AuditBufferAccountParams) -> ActionR
     for c in channels:
         svc = c.get("service", "unknown")
         by_service[svc] = by_service.get(svc, 0) + 1
-    return ActionResult.ok(BufferAccountReport(
+    return ActionResult.success(BufferAccountReport(
         total_channels=len(channels),
         channels_by_service=by_service,
-    ))
+    ), summary="Buffer account audit ready.")

@@ -114,7 +114,7 @@ async def list_channels(ctx, params: ListChannelsParams) -> ActionResult:
     channels: list[dict] = []
     for org in orgs:
         channels.extend(org.get("channels", []) or [])
-    return ActionResult.ok(ChannelList(channels=[_channel_entity(c) for c in channels]))
+    return ActionResult.success(ChannelList(channels=[_channel_entity(c) for c in channels]), summary="Channels listed.")
 
 
 @chat.function(
@@ -135,7 +135,7 @@ async def list_posts(ctx, params: ListPostsParams) -> ActionResult:
     except bf.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     posts = data.get("posts", []) or []
-    return ActionResult.ok(PostList(posts=[_post_entity(p) for p in posts]))
+    return ActionResult.success(PostList(posts=[_post_entity(p) for p in posts]), summary="Posts listed.")
 
 
 @chat.function(
@@ -156,7 +156,7 @@ async def create_post(ctx, params: CreatePostParams) -> ActionResult:
     except bf.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     result = data.get("createPost", {}) or {}
-    return ActionResult.ok(PostCreateResult(id=result.get("id", ""), status=result.get("status", "")))
+    return ActionResult.success(PostCreateResult(id=result.get("id", ""), status=result.get("status", "")), summary="Post created.")
 
 
 @chat.function(
@@ -173,7 +173,7 @@ async def delete_post(ctx, params: DeletePostParams) -> ActionResult:
         await bf.graphql(ctx, conn, _DELETE_POST_MUTATION, variables={"id": params.post_id}, action="delete post")
     except bf.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
-    return ActionResult.ok(DeleteResult(deleted=True, id=params.post_id))
+    return ActionResult.success(DeleteResult(deleted=True, id=params.post_id), summary="Post deleted.")
 
 
 @chat.function(
@@ -191,7 +191,7 @@ async def create_idea(ctx, params: CreateIdeaParams) -> ActionResult:
     except bf.ClientFail as exc:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     result = data.get("createIdea", {}) or {}
-    return ActionResult.ok(IdeaCreateResult(id=result.get("id", "")))
+    return ActionResult.success(IdeaCreateResult(id=result.get("id", "")), summary="Idea created.")
 
 
 @chat.function(
@@ -210,4 +210,4 @@ async def get_account_info(ctx, params: GetAccountInfoParams) -> ActionResult:
         return ActionResult.error(exc.payload["message"], code=exc.payload["code"])
     orgs = ((data.get("account") or {}).get("organizations")) or []
     org = orgs[0] if orgs else {}
-    return ActionResult.ok(AccountInfo(organization_id=org.get("id", ""), organization_name=org.get("name", "")))
+    return ActionResult.success(AccountInfo(organization_id=org.get("id", ""), organization_name=org.get("name", "")), summary="Account info retrieved.")

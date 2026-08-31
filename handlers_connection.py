@@ -92,9 +92,9 @@ async def connect_buffer(ctx, params: ConnectBufferParams) -> ActionResult:
         "organization_id": org_id,
     })
     await _save_connections(ctx, connections)
-    return ActionResult.ok(ConnectBufferResult(
+    return ActionResult.success(ConnectBufferResult(
         connection_id=conn_id, label=params.label or "Buffer account", organization_id=org_id,
-    ))
+    ), summary="Buffer connected.")
 
 
 @chat.function(
@@ -109,7 +109,7 @@ async def disconnect_buffer(ctx, params: DisconnectBufferParams) -> ActionResult
     if len(remaining) == len(connections):
         return ActionResult.error("Connection not found.", code=bf.BF_NOT_CONNECTED)
     await _save_connections(ctx, remaining)
-    return ActionResult.ok(DeleteResult(deleted=True, id=params.connection_id))
+    return ActionResult.success(DeleteResult(deleted=True, id=params.connection_id), summary="Buffer disconnected.")
 
 
 @chat.function(
@@ -120,7 +120,7 @@ async def disconnect_buffer(ctx, params: DisconnectBufferParams) -> ActionResult
 async def list_connections(ctx, params: ListConnectionsParams) -> ActionResult:
     """Return safe connection metadata only -- never the stored API key."""
     connections = await _load_connections(ctx)
-    return ActionResult.ok(ConnectionList(connections=[
+    return ActionResult.success(ConnectionList(connections=[
         BufferConnection(id=c.get("id", ""), label=c.get("label", ""), organization_id=c.get("organization_id", ""))
         for c in connections
-    ]))
+    ]), summary="Connections listed.")

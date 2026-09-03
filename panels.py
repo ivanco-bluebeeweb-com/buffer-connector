@@ -1,7 +1,7 @@
 """Panel UI -- connections list/connect form + the one required "App
 settings" entry point. Uses slot="left" (SDK valid slots are
 ['bottom','center','chat-sidebar','left','overlay','right']) and the
-ui.Button("Connect Buffer Channels (OAuth 2.0)", variant="primary", size="sm", full_width=True, icon="login"),
+ui.Button("Connect Buffer Channels (OAuth 2.0)", variant="primary", size="sm", icon="login"),
 ui.Divider(),
 ui.Text("Or connect via API Access Token", variant="caption"),
 corrected Form/Input kwargs (ui.Form(submit_label=...),
@@ -31,8 +31,7 @@ import handlers_connection as h
 
 def _settings_button() -> ui.UINode:
     return ui.Button(
-        "App settings", variant="secondary", size="sm", full_width=True,
-        icon="settings", on_click=ui.Call("__panel__buffer_settings"),
+        "App settings", variant="secondary", size="sm", icon="settings", on_click=ui.Call("__panel__buffer_settings"),
     )
 
 
@@ -75,7 +74,7 @@ def _connect_form() -> ui.UINode:
 
 def _help_modal() -> ui.UINode:
     return ui.Modal(
-        trigger=ui.Button("How do I set this up?", variant="ghost", size="sm", full_width=True),
+        trigger=ui.Button("How do I set this up?", variant="ghost", size="sm"),
         title="Connecting Buffer",
         children=[
             ui.Stack(direction="v", gap=2, children=[

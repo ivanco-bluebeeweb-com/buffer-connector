@@ -1,6 +1,9 @@
 """Panel UI -- connections list/connect form + the one required "App
 settings" entry point. Uses slot="left" (SDK valid slots are
 ['bottom','center','chat-sidebar','left','overlay','right']) and the
+ui.Button("Connect Buffer Channels (OAuth 2.0)", variant="primary", size="sm", full_width=True, icon="login"),
+ui.Divider(),
+ui.Text("Or connect via API Access Token", variant="caption"),
 corrected Form/Input kwargs (ui.Form(submit_label=...),
 ui.Text(variant="label") for each Input). NOTE: ui.Stack has no `style`
 kwarg (caught during Sprout Social Connector's deploy) -- only align,
